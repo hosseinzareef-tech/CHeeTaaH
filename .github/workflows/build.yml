@@ -1,0 +1,45 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential ccache git libltdl-dev libffi-dev libssl-dev python3-pip python3-setuptools python3-virtualenv zlib1g-dev libncurses5-dev libncursesw5-dev libstdc++6 patchelf unzip openjdk-17-jdk
+        pip install --upgrade pip
+        pip install buildozer cython==0.29.36
+
+    - name: Build with Buildozer
+      run: |
+        # ساخت فایل کانفیگ پیش‌فرض بیلدوزر
+        buildozer init
+        
+        # اصلاح تنظیمات ضروری در فایل کانفیگ برای اپلیکیشن شما
+        sed -i 's/#title = My Application/title = CheeTaH Sniper/' buildozer.spec
+        sed -i 's/#package.name = myapp/package.name = cheetahsniper/' buildozer.spec
+        sed -i 's/#package.domain = org.test/package.domain = org.cheetah/' buildozer.spec
+        sed -i 's/#requirements = python3,kivy/requirements = python3,kivy,websockets,certifi,openssl/' buildozer.spec
+        sed -i 's/#orientation = portrait/orientation = landscape/' buildozer.spec
+
+        # اجرای بیلدوزر برای ساخت APK
+        buildozer -v android debug
+
+    - name: Upload APK
+      uses: actions/upload-artifact@v3
+      with:
+        name: package
+        path: bin/*.apk
