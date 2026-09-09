@@ -23,17 +23,6 @@ jobs:
         pip install --upgrade pip
         pip install buildozer cython==0.29.36
 
-    - name: Initialize Buildozer Config
-      run: |
-        buildozer init || true
-        sed -i 's/#title = My Application/title = CheeTaH Sniper/' buildozer.spec
-        sed -i 's/#package.name = myapp/package.name = cheetahsniper/' buildozer.spec
-        sed -i 's/#package.domain = org.test/package.domain = org.cheetah/' buildozer.spec
-        sed -i 's/#requirements = python3,kivy/requirements = python3,kivy,websockets,certifi,openssl/' buildozer.spec
-        sed -i 's/#orientation = portrait/orientation = landscape/' buildozer.spec
-        sed -i 's/#android.api = 33/android.api = 33/' buildozer.spec
-        sed -i 's/#android.minapi = 21/android.minapi = 21/' buildozer.spec
-
     - name: Build with Buildozer
       run: |
         buildozer -v android debug
